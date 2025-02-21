@@ -1,0 +1,94 @@
+<nav class="navbar navbar-expand-lg  nav-styel">
+  <div class="container-fluid" >
+    <a class="navbar-logo text-color" routerLink="/">E-Commerce</a>
+
+    <button class="navbar-toggler  nav-tex" type="button" data-bs-toggle="collapse"
+      data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+      aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon nav-tex bg-white"></span>
+    </button>
+    <div class="collapse navbar-collapse ms-5" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link  nav-text" aria-current="page" routerLink="/">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link nav-text" routerLink="seller-auth">Vendedor</a>
+        </li>
+      </ul>
+
+      <!-- form-control -->
+      <div [ngSwitch]="menuType" class="search-margin">
+        <form *ngSwitchCase="'default'" class="d-flex  me-auto" role="search">
+          <input #searchInput value="{{searchName}}" class="saerch me-1" type="search" (keyup)="searchProduct($event)" (blur)="hideSearch()"
+            placeholder="    Search product" aria-label="Search">
+          <button class="btn btn-outline-success" (click)="submintSearch(searchInput.value)" type="submit">Buscar</button>
+
+          <!-- ---------Search Saggetion----------- -->
+          <ul class="suggested-result" *ngIf="searchResult">
+            <li *ngFor="let item of searchResult">
+              <a (mousedown)="redirectToDetails(item.name)" >{{item?.name}}</a>
+            </li>
+          </ul>
+        </form>
+        <form *ngSwitchCase="'user'" class="d-flex  me-auto" role="search">
+          <input #searchInput value="{{searchName}}" class="saerch me-1" type="search" (keyup)="searchProduct($event)" (blur)="hideSearch()"
+            placeholder="    Search product" aria-label="Search">
+          <button class="btn btn-outline-success" (click)="submintSearch(searchInput.value)" type="submit">Buscar</button>
+
+          <!-- ---------Search Saggetion----------- -->
+          <ul class="suggested-result" *ngIf="searchResult">
+            <li *ngFor="let item of searchResult">
+              <a (mousedown)="redirectToDetails(item.name)" >{{item?.name}}</a>
+            </li>
+          </ul>
+        </form>
+      </div>
+      <div [ngSwitch]="menuType">
+        <ul *ngSwitchCase="'default'" class="navbar-nav  mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link  nav-text" routerLink="user-auth" aria-current="page">Login/Registro</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link nav-text" href routerLink="cart-page">Carrito ({{cartItemsNumber}})</a>
+          </li>
+        </ul>
+
+        <!-- ----------Seller header------------ -->
+        <ul *ngSwitchCase="'seller'" class="navbar-nav  mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link  nav-text" aria-current="page" routerLink="seller-home">Lista de Productos</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link  nav-text" aria-current="page" routerLink="seller-add-product">Agregar Producto</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link  nav-text" aria-current="page">{{sellerName | titlecase}}</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link nav-text logout"  (click)="sellerlogoutpopup()">Desconectar</a>
+          </li>
+
+        </ul>
+
+        <!-- ----------User header------------ -->
+        <div *ngSwitchCase="'user'">
+        <ul  class="navbar-nav  mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link  nav-text" aria-current="page">{{userName | titlecase}}</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link  nav-text" routerLink="my-order" aria-current="page">Mis Ordenes</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link  nav-text" aria-current="page" href routerLink="cart-page">Carrito({{cartItemsNumber}})</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link nav-text logout"   (click)="userlogoutpopup()">Desconectar</a>
+          </li>
+        </ul>
+      </div>
+      </div>
+    </div>
+  </div>
+</nav>
