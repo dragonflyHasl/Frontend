@@ -13,20 +13,19 @@ export interface product{
     name:string,
     price:number,
     color:string,
-    category:string,
+    category:number,
     description:string,
     url:string,
     productId:undefined|number,
     id:number,
     quantity:undefined|number
-    
 }
 
 export interface cart{
     name:string,
     price:number,
     color:string,
-    category:string,
+    category:number,
     description:string,
     url:string,
     id:number|undefined,
@@ -49,4 +48,8 @@ export interface  order{
     totalPrice:number,
     userId:number,
     id:number|undefined
+}
+export interface category{
+  id: number|undefined,
+  descripcion: string
 }

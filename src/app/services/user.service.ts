@@ -16,7 +16,7 @@ export class UserService {
   isLoginFail = new EventEmitter<boolean>(false)
 
   singUp(value: singUp) {
-    this.http.post('http://localhost:3000/user', value, { observe: 'response' }).subscribe((result) => {
+    this.http.post('http://localhost:3001/user', value, { observe: 'response' }).subscribe((result) => {
       this.isUserLogedIn.next(true)
       if (result) {
         localStorage.setItem('user', JSON.stringify(result.body));
@@ -33,14 +33,14 @@ export class UserService {
   }
 
   userLogin(data: login) {
-    this.http.get<singUp[]>(`http://localhost:3000/user?email=${data.email}&password=${data.password}`, { observe: 'response' }).subscribe((result: any) => {
+    this.http.get<singUp[]>(`http://localhost:3001/user?email=${data.email}&password=${data.password}`, { observe: 'response' }).subscribe((result: any) => {
 
       if (result && result.body.length) {
         localStorage.setItem('user', JSON.stringify(result.body[0]))
         this.router.navigate(['/'])
         this.isLoginFail.emit(false)
       } else {
-        
+
         this.isLoginFail.emit(true)
       }
     })

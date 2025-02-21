@@ -12,7 +12,7 @@ import { Subscription } from 'rxjs';
 export class AlertBoxComponent implements OnInit {
 
   clickEventSubscription:Subscription | undefined;
-  
+
   logoutValue:String|undefined
   popupBoxheader=''
   popupBoxmsg=''
@@ -43,24 +43,24 @@ export class AlertBoxComponent implements OnInit {
   }
   @Output() userLogoutEvent=new EventEmitter<boolean>();
 
-  ngOnInit(): void {  
-    
+  ngOnInit(): void {
+
   }
   openAlertBox() {
     if(this.logoutValue=='user' || this.logoutValue=='seller'){
-        this.popupBoxheader='Confirm Logout';
-        this.popupBoxmsg='Are you sure you want to log out?';
+        this.popupBoxheader='Confirma Desconeción';
+        this.popupBoxmsg='Esta seguro de querer desconectarse?';
         this.popupbutton='Logout';
     }
     else if(this.logoutValue=='product'){
-      this.popupBoxheader='Confirm Delete';
-      this.popupBoxmsg='Are you sure you want to delete product?';
+      this.popupBoxheader='Confirmar Eliminación';
+      this.popupBoxmsg='Esta seguro que desea Eliminarlo?';
       this.popupbutton='Delete';
     }
     const id=document.getElementById("myModal");
     if(id){
       id.style.display='block'
-    }  
+    }
   }
 
   closePopup() {
@@ -68,7 +68,7 @@ export class AlertBoxComponent implements OnInit {
     if(id){
       id.style.display='none'
     }
-   
+
   }
   stopPropagation(event: Event) {
     event.stopPropagation();
@@ -88,6 +88,6 @@ export class AlertBoxComponent implements OnInit {
 this.closePopup();
   }
 
-  
+
 }
 

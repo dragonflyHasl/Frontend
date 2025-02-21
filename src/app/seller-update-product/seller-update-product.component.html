@@ -18,11 +18,11 @@
         <div class="mb-4">
             <input type="text" required class="form-control" ngModel="{{productData?.color}}" name="color" id="exampleInputColor"
               placeholder="Ingrese el Color" >
-          </div>
-
+        </div>
         <div class="mb-4">
-          <input type="text" required class="form-control" ngModel="{{productData?.category}}" name="category" placeholder="Ingrese la Categoria"
-            id="exampleInputCategory">
+          <select required class="form-control" ngModel={{productData?.category}} name="category" id="exampleInputCategory">
+            <option *ngFor="let category of categories" [value]="category.id">{{category.descripcion}}</option>
+          </select>
         </div>
 
         <div class="mb-4">

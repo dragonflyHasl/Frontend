@@ -19,18 +19,18 @@ export class SellerService implements OnInit {
   ngOnInit(): void { }
 
   selerSinghUp(data: singUp) {
-   this.http.post('http://localhost:3000/seller',data,
+   this.http.post('http://localhost:3001/seller',data,
     {observe:'response'}).subscribe((result:any)=>{
       this.isSellerLoggedIn.next(true);
       if(result){
       localStorage.setItem('seller',JSON.stringify(result.body))
       this.router.navigate(['seller-home']);
-    } 
-    }) 
-  }   
+    }
+    })
+  }
   userLogin(data:login){
-    this.http.get(`http://localhost:3000/seller?email=${data.email}&password=${data.password}`,
-    {observe:'response'}).subscribe((result:any)=>{ 
+    this.http.get(`http://localhost:3001/seller?email=${data.email}&password=${data.password}`,
+    {observe:'response'}).subscribe((result:any)=>{
 
       if(result && result.body && result.body.length){
         localStorage.setItem('seller',JSON.stringify(result.body))
@@ -38,7 +38,7 @@ export class SellerService implements OnInit {
       }
       else{
         this.isLoginFail.emit(true)
-      } 
+      }
     });
   }
 
@@ -48,5 +48,5 @@ export class SellerService implements OnInit {
       this.router.navigate(['seller-home'])
     }
   }
-  
+
 }
