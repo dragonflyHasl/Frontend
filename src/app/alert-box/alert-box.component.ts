@@ -48,14 +48,14 @@ export class AlertBoxComponent implements OnInit {
   }
   openAlertBox() {
     if(this.logoutValue=='user' || this.logoutValue=='seller'){
-        this.popupBoxheader='Confirma Desconeción';
+        this.popupBoxheader='Confirma Desconexión';
         this.popupBoxmsg='Esta seguro de querer desconectarse?';
-        this.popupbutton='Logout';
+        this.popupbutton='Desconectarse';
     }
     else if(this.logoutValue=='product'){
       this.popupBoxheader='Confirmar Eliminación';
       this.popupBoxmsg='Esta seguro que desea Eliminarlo?';
-      this.popupbutton='Delete';
+      this.popupbutton='Eliminar';
     }
     const id=document.getElementById("myModal");
     if(id){
