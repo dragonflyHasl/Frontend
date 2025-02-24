@@ -1,55 +1,74 @@
-export interface singUp{
-    name:string
-    email:string
-    password:string
+export interface category {
+  id: number | undefined;
+  nombre: string;
+  descripcion: string;
 }
 
-export interface login{
-    email:string,
-    password:string
+export interface usuario {
+  id: any;
+  correo: string;
+  password: string;
+  nombre: string;
+  rol: string;
+  fechaCreacion: Date;
 }
 
-export interface product{
-    name:string,
-    price:number,
-    color:string,
-    category:number,
-    description:string,
-    url:string,
-    productId:undefined|number,
-    id:number,
-    quantity:undefined|number
+export interface singUp {
+  name: string;
+  email: string;
+  password: string;
 }
 
-export interface cart{
-    name:string,
-    price:number,
-    color:string,
-    category:number,
-    description:string,
-    url:string,
-    id:number|undefined,
-    quantity:undefined|number,
-    userId:number,
-    productId:number
+export interface login {
+  email: string;
+  password: string;
 }
 
-export interface priceSummary{
-    price:number,
-    discount:number,
-    tax:number,
-    delivery:number,
-    total:number
+export interface product {
+  id: number;
+  nombre: string;
+  descripcion: string;
+  precio: number;
+  stock: undefined | number;
+  categoria: category;
+  esEcologico: boolean;
+  urlImagen: string;
 }
-export interface  order{
-    email:string,
-    address:string,
-    contact:string,
-    totalPrice:number,
-    userId:number,
-    id:number|undefined
+
+export interface priceSummary {
+  price: number;
+  discount: number;
+  tax: number;
+  delivery: number;
+  total: number;
 }
-export interface category{
-  id: number|undefined,
-  descripcion: string
+export interface DetalleOrden {
+  id: number | undefined;
+  productId: number | undefined;
+  producto: product;
+  cantidad: number;
+  precioUnitario: number;
+}
+export interface order {
+  id: number | undefined;
+  usuarioId: any;
+  usuario: usuario;
+  fechaOrden: Date;
+  email: string;
+  direccionEnvio: string;
+  contacto: string;
+  montoTotal: number;
+  estado: string;
+  detalles: DetalleOrden;
+}
+
+export interface cartDetalle {
+  id: number | undefined;
+  producto: product;
+  cantidad: number;
+}
+export interface cart {
+  id: number | undefined;
+  idusuario: any;
+  productos: cartDetalle[] | undefined;
 }

@@ -1,124 +1,158 @@
 import { HttpClient } from '@angular/common/http';
 import { EventEmitter, Injectable } from '@angular/core';
-import { cart, order, product } from '../data-type';
-
+import { cart, order, product, cartDetalle } from '../data-type';
+import { environment } from 'src/environments/enviroment';
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ProductService {
+  private apiUrl = environment.apiUrl;
+  cartData = new EventEmitter<cart[] | []>();
+  productName = new EventEmitter<string>();
 
-
-    cartData = new EventEmitter<product[] | []>();
-    productName=new EventEmitter<string>();
-
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
   addProduct(data: product) {
-    return this.http.post('http://localhost:3001/product', data);
+    return this.http.post(this.apiUrl + '/productos', data);
   }
   updateProduct(data: product, id: any) {
-    return this.http.put<product>(`http://localhost:3001/product/${id}`, data);
+    return this.http.put<product>(this.apiUrl + `/productos/${id}`, data);
   }
 
   productList() {
-    return this.http.get<product[]>('http://localhost:3001/product');
+    return this.http.get<product[]>(this.apiUrl + '/productos');
   }
 
-  deleteProduct(id: number|undefined) {
-    return this.http.delete(`http://localhost:3001/product/${id}`);
+  deleteProduct(id: number | undefined) {
+    return this.http.delete(this.apiUrl + `/productos/${id}`);
   }
 
   getProduct(id: string) {
-    return this.http.get<product>(`http://localhost:3001/product/${id}`);
+    return this.http.get<product>(this.apiUrl + `/productos/${id}`);
   }
 
   popularProducts() {
-    return this.http.get<product[]>(`http://localhost:3001/product?_limit=4`);
+    return this.http.get<product[]>(this.apiUrl + `/productos`);
   }
   getAllProducts() {
-    return this.http.get<product[]>(`http://localhost:3001/product`);
+    return this.http.get<product[]>(this.apiUrl + `/productos`);
   }
 
   searchProducts(word: any) {
-    return this.http.get<product[]>(`http://localhost:3001/product?q=${word}`);
+    return this.http.get<product[]>(this.apiUrl + `/productos?q=${word}`);
   }
 
   getProductDetails(id: any) {
-    return this.http.get<product>(`http://localhost:3001/product/${id}`);
+    return this.http.get<product>(this.apiUrl + `/productos/${id}`);
   }
 
-  localAddToCart(data: product) {
-    let cartData = [];
-    let localCart = localStorage.getItem('localCart')
+  localAddToCart(data: cartDetalle, userId: any) {
+    let cartData: cart[] = [];
+    let localCart = localStorage.getItem('localCart');
 
-    if (!localCart) {
-      localStorage.setItem('localCart', JSON.stringify([data]))
-      this.cartData.emit([data])
-    }
-    else {
-      cartData = JSON.parse(localCart)
-      cartData.push(data)
-      localStorage.setItem('localCart', JSON.stringify(cartData))
-      this.cartData.emit(cartData)
+    if (localCart) {
+      cartData = JSON.parse(localCart);
     }
 
-  }
+    // Buscar el carrito del usuario
+    let userCart = cartData.find((cart) => cart.idusuario === userId);
 
-  removeItemsFromCart(productId: number) {
-    let cartData = localStorage.getItem('localCart');
-    if (cartData) {
-      let items: product[] = JSON.parse(cartData);
-      items = items.filter((items: product) => productId !== items.id)
-      //it item all data come except productId and we set thode details in local storege
-      localStorage.setItem('localCart', JSON.stringify(items))
-      this.cartData.emit(items)
-    }
-  }
-
-  userAddToCart(cartData:cart){
-    return this.http.post('http://localhost:3001/cart', cartData);
-  }
-
-  getCartList(userId:number){
-    return this.http.get<product[]>('http://localhost:3001/cart?userId='+userId,
-    {observe: 'response'}).subscribe((result)=>{
-      if(result && result.body){
-        this.cartData.emit(result.body)
+    if (userCart) {
+      // Verificar si el producto ya existe en el carrito
+      let existingProduct = userCart.productos?.find((p) => p.id === data.id);
+      if (existingProduct) {
+        // Si ya existe, solo aumentar la cantidad
+        existingProduct.cantidad += data.cantidad;
+      } else {
+        // Si no existe, agregarlo al carrito del usuario
+        userCart.productos?.push(data);
       }
-    });
-  }
-  removeToCartApi(cartId:number){
-    return this.http.delete('http://localhost:3001/cart/'+cartId);
-  }
-
-  currentCartData(){
-    let userStore=localStorage.getItem('user');
-    let userData=userStore && JSON.parse(userStore);
-    return this.http.get<cart[]>('http://localhost:3001/cart?userId='+userData.id)
-  }
-
-  orderNow(data:order){
-    return this.http.post('http://localhost:3001/orders', data);
-  }
-
-  orderList(){
-    let userStore=localStorage.getItem('user');
-    let userData=userStore && JSON.parse(userStore);
-    return this.http.get<order[]>('http://localhost:3001/orders?userId='+userData.id );
-  }
-  deleteCartItems(cartId:number|undefined){
-    return this.http.delete('http://localhost:3001/cart/'+cartId,{observe:'response'}).subscribe((result)=>{
-      if(result){
-        this.cartData.emit([])
-      }
-    })
-  }
-  cancelOrder(orderId:number|undefined){
-    return this.http.delete('http://localhost:3001/orders/'+orderId);
-  }
-  setProductname(data:any){
-    this.productName.emit(data)
+    } else {
+      // Si el usuario no tiene carrito, crear uno nuevo
+      cartData.push({
+        id: Date.now(), // Se puede generar un ID único
+        idusuario: userId, // Ajustar según estructura real
+        productos: [data],
+      });
     }
 
+    localStorage.setItem('localCart', JSON.stringify(cartData));
+    this.cartData.emit(cartData);
+  }
+
+  removeItemsFromCart(productId: number, userId: any) {
+    const cartData = localStorage.getItem('localCart');
+    if (!cartData) return;
+
+    let carts: cart[] = JSON.parse(cartData);
+    const originalLength = carts.length;
+
+    carts = carts
+      .map((cart) => {
+        if (cart.idusuario === userId && cart.productos) {
+          cart.productos = cart.productos.filter(
+            (detalle) => detalle.producto.id !== productId
+          );
+        }
+        return cart;
+      })
+      .filter((cart) => cart.productos && cart.productos.length > 0); // Elimina carritos vacíos
+
+    if (carts.length !== originalLength) {
+      localStorage.setItem('localCart', JSON.stringify(carts));
+      this.cartData.emit(carts);
+    }
+  }
+
+  userAddToCart(cartData: cart) {
+    return this.http.post(this.apiUrl + '/cart', cartData);
+  }
+
+  getCartList(userId: any) {
+    return this.http
+      .get<cart[]>(this.apiUrl + '/cart?userId=' + userId, {
+        observe: 'response',
+      })
+      .subscribe((result) => {
+        if (result && result.body) {
+          this.cartData.emit(result.body);
+        }
+      });
+  }
+  removeToCartApi(cartId: number) {
+    return this.http.delete(this.apiUrl + '/cart/' + cartId);
+  }
+
+  currentCartData() {
+    let userStore = localStorage.getItem('user');
+    let userData = userStore && JSON.parse(userStore);
+    return this.http.get<cart[]>(this.apiUrl + '/cart?userId=' + userData.id);
+  }
+
+  orderNow(data: order) {
+    return this.http.post(this.apiUrl + '/orders', data);
+  }
+
+  orderList() {
+    let userStore = localStorage.getItem('user');
+    let userData = userStore && JSON.parse(userStore);
+    return this.http.get<order[]>(
+      this.apiUrl + '/orders?userId=' + userData.id
+    );
+  }
+  deleteCartItems(cartId: number | undefined) {
+    return this.http
+      .delete(this.apiUrl + '/cart/' + cartId, { observe: 'response' })
+      .subscribe((result) => {
+        if (result) {
+          this.cartData.emit([]);
+        }
+      });
+  }
+  cancelOrder(orderId: number | undefined) {
+    return this.http.delete(this.apiUrl + '/orders/' + orderId);
+  }
+  setProductname(data: any) {
+    this.productName.emit(data);
+  }
 }
-

@@ -1,71 +1,66 @@
 import { EventEmitter, Injectable } from '@angular/core';
-import { AlertBoxComponent } from '../alert-box/alert-box.component';
-import { Subject , Observable} from 'rxjs';
+import { AlertBoxComponent } from '../componentes/utils/alert-box/alert-box.component';
+import { Subject, Observable } from 'rxjs';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class PopupboxService {
-  
-  constructor( ) { }
-  private subject=new Subject<any>(); 
-  private subject2=new Subject<any>(); 
+  constructor() {}
+  private subject = new Subject<any>();
+  private subject2 = new Subject<any>();
 
-//User Logout
-  openPopUp(){
-   this.subject.next(true);
+  //User Logout
+  openPopUp() {
+    this.subject.next(true);
   }
-  getClickEvent():Observable<any>{
+  getClickEvent(): Observable<any> {
     return this.subject.asObservable();
   }
 
-  ueserLogout(){
+  ueserLogout() {
     this.subject2.next(true);
   }
-  
-  userLogoutEvent(){
+
+  userLogoutEvent() {
     return this.subject2.asObservable();
-    
   }
 
-  private sellerpopup=new Subject<any>();
-  private sellerpopupLogout=new Subject<any>();
+  private sellerpopup = new Subject<any>();
+  private sellerpopupLogout = new Subject<any>();
 
+  //Seller logout
 
-//Seller logout
+  sellerOpenPopUp() {
+    this.sellerpopup.next(true);
+  }
+  sellerGetClickEvent(): Observable<any> {
+    return this.sellerpopup.asObservable();
+  }
 
-sellerOpenPopUp(){
-  this.sellerpopup.next(true);
-}
-sellerGetClickEvent():Observable<any>{
-  return this.sellerpopup.asObservable();
-}
+  sellerLogout() {
+    this.sellerpopupLogout.next(true);
+  }
 
-sellerLogout(){
-      this.sellerpopupLogout.next(true);
-}
+  sellerLogoutEvenr() {
+    return this.sellerpopupLogout.asObservable();
+  }
 
-sellerLogoutEvenr(){
-  return this.sellerpopupLogout.asObservable();
-}
+  //Product delete
+  private product = new Subject<any>();
+  private deleteProductList = new Subject<any>();
 
-//Product delete
-  private product=new Subject<any>();
-  private deleteProductList=new Subject<any>();
- 
-productPopup(){
-  this.product.next(true);
-}
+  productPopup() {
+    this.product.next(true);
+  }
 
-productpopupEvent(){
-  return this.product.asObservable();
+  productpopupEvent() {
+    return this.product.asObservable();
+  }
+  deleteProduct() {
+    this.deleteProductList.next(true);
+  }
+  deleteProductEvent() {
+    return this.deleteProductList.asObservable();
+  }
 }
-deleteProduct(){
-      this.deleteProductList.next(true);
-}
-deleteProductEvent(){
-  return this.deleteProductList.asObservable();
-}
-
-}
-

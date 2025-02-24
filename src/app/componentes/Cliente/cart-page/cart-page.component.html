@@ -1,0 +1,104 @@
+<div>
+  <app-alert-box></app-alert-box>
+  <router-outlet></router-outlet>
+</div>
+<div class="container mt-5">
+  <div class="row">
+    <div *ngIf="noProductMsg" class="footer-margin">
+      <h2 class="text-center red mt-5">{{ noProductMsg }}</h2>
+    </div>
+    <div class="col-xl-8 col-lg-8 col-md-8 col-sm-12 col-12">
+      <div
+        class="card mb-3 card-style mb-4 card-hower"
+        *ngFor="let item of cartData?.[0]?.productos"
+      >
+        <div class="row g-0">
+          <div class="col-md-3">
+            <a>
+              <img
+                src="{{ item.producto.urlImagen }}"
+                class="img-fluid rounded-start"
+                alt="Product Image"
+              />
+            </a>
+          </div>
+          <div class="col-md-9">
+            <div class="card-body mt-4">
+              <div class="d-flex justify-content-between">
+                <p>{{ item.producto.nombre }}</p>
+                <p>
+                  Precio:
+                  {{
+                    item.producto.precio | currency : "S/ " : "symbol" : "1.2-2"
+                  }}
+                </p>
+                <p>Cantidad: {{ item.cantidad }}</p>
+                <div>
+                  <button
+                    type="button"
+                    (click)="removeTocart(item?.id)"
+                    class="btn btn-danger"
+                  >
+                    Retirar del Carrito
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12 mb-5">
+      <div class="ms-3" *ngIf="cartData?.length">
+        <h1 class="text-center text-color">Resumen</h1>
+        <div class="card card-hight">
+          <div class="mt-2">
+            <div class="float-right">
+              <span>Monto</span
+              ><span>{{
+                priceSummary.price | currency : "S/ " : "symbol" : "1.2-2"
+              }}</span>
+            </div>
+            <div class="float-right">
+              <span>Impuestos</span
+              ><span>{{
+                priceSummary.tax | currency : "S/ " : "symbol" : "1.2-2"
+              }}</span>
+            </div>
+            <div class="float-right">
+              <span>Delivery</span
+              ><span>{{
+                priceSummary.delivery | currency : "S/ " : "symbol" : "1.2-2"
+              }}</span>
+            </div>
+            <div class="float-right">
+              <span>Descuentos 8%</span
+              ><span>{{
+                priceSummary.discount | currency : "S/ " : "symbol" : "1.2-2"
+              }}</span>
+            </div>
+
+            <div class="float-right">
+              <h2>Total</h2>
+              <h2>
+                {{ priceSummary.total | currency : "S/ " : "symbol" : "1.2-2" }}
+              </h2>
+            </div>
+            <div class="text-center mb-2">
+              <button (click)="checkOut()" class="btn btn-success">
+                Check - Out
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mt-5 text-center">
+        <a routerLink="/user-auth"
+          ><h3 class="red">
+            <u>{{ msgUserNotLogin }}</u>
+          </h3></a
+        >
+      </div>
+    </div>
+  </div>
+</div>

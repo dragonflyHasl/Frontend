@@ -1,19 +1,27 @@
 import { Component, OnInit } from '@angular/core';
 import { UserService } from '../services/user.service';
-import { cart, login, product, singUp } from '../data-type';
+import { AuthService } from '../auth.service';
+import { cart, login, product, singUp, usuario } from '../data-type';
 import { ProductService } from '../services/product.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-user-auth',
   templateUrl: './user-auth.component.html',
-  styleUrls: ['./user-auth.component.css']
+  styleUrls: ['./user-auth.component.css'],
 })
 export class UserAuthComponent implements OnInit {
+  showLogin: boolean = true;
+  authError: any;
+  usuario: usuario | any;
+  producto: product | any;
 
-  showLogin: boolean = true
-  authError: any
-
-  constructor(private user: UserService, private product: ProductService) { }
+  constructor(
+    private authService: AuthService,
+    private user: UserService,
+    private product: ProductService,
+    private router: Router
+  ) {}
   ngOnInit(): void {
     this.user.userAuthReload();
   }
@@ -23,22 +31,40 @@ export class UserAuthComponent implements OnInit {
   }
 
   opneLogin() {
-    this.showLogin = true
+    this.showLogin = true;
   }
   opneSingup() {
-    this.showLogin = false
+    this.showLogin = false;
   }
 
+  /*
   login(value: login) {
     this.user.userLogin(value);
     this.user.isLoginFail.subscribe((isError) => {
       if (isError) {
         this.authError = 'El correo o la contraseña no es correcta';
-      }
-      else {
+      } else {
         this.localCartToRemotecart();
       }
-    })
+    });
+  }
+  */
+  login(value: login) {
+    this.authService
+      .login({ correo: value.email, password: value.password })
+      .subscribe(
+        (response) => {
+          this.authService.saveToken(response.token);
+          const userId = this.authService.getUserId();
+          console.log('ID del usuario:', userId);
+          this.router.navigate(['/cart-page']); // Redirige a otra página después del login
+          this.localCartToRemotecart();
+        },
+        (error) => {
+          console.error('Error al iniciar sesión', error);
+          this.authError = 'El correo o la contraseña no es correcta';
+        }
+      );
   }
 
   localCartToRemotecart() {
@@ -48,18 +74,20 @@ export class UserAuthComponent implements OnInit {
     if (data) {
       let cartDatalist: product[] = JSON.parse(data);
 
-
       cartDatalist.forEach((prduct: product, index) => {
         let cartData: cart = {
           ...prduct,
-          productId: prduct.id,
-          userId
+          //productId: prduct.id,
+          //usuarioId: 0,
+          //cantidad: 1,
+          idusuario: this.usuario.id,
+          productos: this.producto,
         };
         delete cartData.id;
         setTimeout(() => {
           this.product.userAddToCart(cartData).subscribe((result) => {
             if (result) {
-              console.log("Item store in DB");
+              console.log('Item store in DB');
             }
           });
           if (cartDatalist.length === index + 1) {
@@ -69,8 +97,7 @@ export class UserAuthComponent implements OnInit {
       });
     }
     setTimeout(() => {
-      this.product.getCartList(userId)
+      this.product.getCartList(userId);
     }, 2000);
-
   }
 }

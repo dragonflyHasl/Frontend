@@ -1,0 +1,79 @@
+<h1 class="green h-size text-center mt-5">
+  <b>Actualizar detalles del producto</b>
+</h1>
+<div class="container">
+  <div class="card mt-5 card-style">
+    <div class="card-body">
+      <form
+        #sellerUpdateProduct="ngForm"
+        (ngSubmit)="submint(sellerUpdateProduct.value)"
+      >
+        <div class="mb-4">
+          <!-- <label for="exampleInputPassword1" class="form-label">Name</label> -->
+          <input
+            type="text"
+            required
+            class="form-control"
+            ngModel="{{ productData?.nombre }}"
+            name="name"
+            placeholder="Ingrese nombre del producto"
+            id="exampleInputName"
+          />
+        </div>
+
+        <div class="mb-4">
+          <input
+            type="number"
+            required
+            class="form-control"
+            ngModel="{{ productData?.precio }}"
+            name="price"
+            id="exampleInputPrice"
+            placeholder="Ingrese precio del producto"
+            aria-describedby="emailHelp"
+          />
+        </div>
+        <div class="mb-4">
+          <select
+            required
+            class="form-control"
+            ngModel="{{ productData?.categoria?.id }}"
+            name="category"
+            id="exampleInputCategory"
+          >
+            <option *ngFor="let category of categories" [value]="category.id">
+              {{ category.descripcion }}
+            </option>
+          </select>
+        </div>
+
+        <div class="mb-4">
+          <textarea
+            class="form-control"
+            ngModel="{{ productData?.descripcion }}"
+            name="description"
+            placeholder="Ingrese la descripción"
+            id="exampleInputDescription"
+            rows="3"
+          ></textarea>
+        </div>
+
+        <div class="mb-4">
+          <input
+            type="url"
+            required
+            class="form-control"
+            ngModel="{{ productData?.urlImagen }}"
+            name="url"
+            placeholder="Ingrese la URL de la Imagen"
+            id="exampleInputUrl"
+          />
+        </div>
+        <div class="text-center">
+          <button type="submit" class="btn center">Actualizar Producto</button>
+        </div>
+        <h4 class="green text-center mt-4">{{ addPrductMesg }}</h4>
+      </form>
+    </div>
+  </div>
+</div>

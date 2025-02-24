@@ -1,22 +1,31 @@
-import { Injectable } from "@angular/core";
-import { ActivatedRouteSnapshot, CanActivate, CanActivateFn, Router, RouterStateSnapshot, UrlTree } from "@angular/router";
-import { Observable } from "rxjs";
-import { SellerService } from "./services/seller.service";
+import { Injectable } from '@angular/core';
+import { CanActivate, Router } from '@angular/router';
+import { AuthService } from './auth.service';
+import { jwtDecode } from 'jwt-decode';
 
 @Injectable({
-  providedIn:'root'
+  providedIn: 'root',
 })
+export class AuthGuard implements CanActivate {
+  constructor(private authService: AuthService, private router: Router) {}
 
-export class AuthGuard implements CanActivate{
-  constructor(private sellerService:SellerService){}
-  canActivate(
-    route:ActivatedRouteSnapshot,
-    state: RouterStateSnapshot):Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree
-    {
+  canActivate(): boolean {
+    const token = this.authService.getToken();
 
-      if(localStorage.getItem('seller')){
-        return true
-      }
-      return this.sellerService.isSellerLoggedIn; 
+    if (token && !this.isTokenExpired(token)) {
+      return true;
+    } else {
+      this.router.navigate(['/user-auth']);
+      return false;
+    }
+  }
+
+  private isTokenExpired(token: string): boolean {
+    try {
+      const decodedToken: any = jwtDecode(token);
+      return decodedToken.exp * 1000 < Date.now(); // Comparar fecha de expiración
+    } catch (error) {
+      return true; // Si falla el decodificado, asumimos que el token es inválido
+    }
   }
 }

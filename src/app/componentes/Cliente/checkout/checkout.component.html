@@ -1,0 +1,69 @@
+<div>
+  <app-alert-box></app-alert-box>
+  <router-outlet></router-outlet>
+</div>
+<div class="container">
+  <div class="text-center mt-4">
+    <h1 class="text-color"><b>Check-Out</b></h1>
+  </div>
+  <div class="row">
+    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12">
+      <div class="text-center">
+        <h1 class="heading">Agregar Dirección de Entrega</h1>
+        <form
+          class="mt-6"
+          #orderData="ngForm"
+          (ngSubmit)="oderNow(orderData.value)"
+        >
+          <input
+            type="text"
+            name="email"
+            placeholder="Ingrese su correo"
+            ngModel
+            #mailInput="ngModel"
+          /><br />
+          <input
+            type="text"
+            name="address"
+            placeholder="Ingrese su dirección"
+            ngModel
+            #adderssInput="ngModel"
+          /><br />
+          <input
+            type="text"
+            name="contact"
+            placeholder="Ingrese contacto que recibira el producto"
+            ngModel
+            #contactInput="ngModel"
+          /><br />
+          <button
+            type="submit"
+            [disabled]="
+              mailInput.invalid &&
+              adderssInput.invalid &&
+              contactInput.invalid &&
+              contactInput.touched
+            "
+          >
+            Ordenar Ahora
+          </button>
+        </form>
+      </div>
+    </div>
+    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12 mt-5">
+      <div class="text-center mt-5">
+        <h1>
+          Monto Total: <b>{{ totalPrice | currency : "S/ " }} </b>
+        </h1>
+        <h2>Metodo de Pago: <b>Pago ContraEntrega</b></h2>
+      </div>
+    </div>
+  </div>
+
+  <div class="d-flex text-center msg-margin" *ngIf="orderMsg">
+    <h3 class="text-color me-2">
+      <b>{{ orderMsg }}</b>
+    </h3>
+    <div class="spinner-border text-primary" role="status"></div>
+  </div>
+</div>

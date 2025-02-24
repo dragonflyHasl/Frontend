@@ -1,0 +1,47 @@
+<div>
+  <app-alert-box></app-alert-box>
+  <router-outlet></router-outlet>
+</div>
+<div class="container">
+  <h1>Mi Orden</h1>
+  <div *ngIf="!orderData?.length" class="for-footer">
+    <h2 class="text-center red mt-5">No has pedido ningún Producto.....</h2>
+  </div>
+  <div
+    class="card mb-3 card-style mb-4 card-hower mt-5"
+    *ngFor="let item of orderData"
+  >
+    <div class="row g-0">
+      <div class="col-md-1">
+        <div class="logo-margin ms-3">
+          <i
+            class="fa-solid fa-cart-shopping fa-2xl"
+            style="color: #437adb"
+          ></i>
+        </div>
+      </div>
+      <div class="col-md-11">
+        <div class="card-body">
+          <div class="d-flex justify-content-between">
+            <p>Orden Id: <br />#{{ item.id }}</p>
+            <p>
+              Precio: <br />{{
+                item.montoTotal | currency : "S/ " : "symbol" : "1.2-2"
+              }}
+            </p>
+            <p>Status: <br />{{ item.estado }}</p>
+            <div>
+              <button
+                type="button"
+                (click)="cancleOrder(item.id)"
+                class="btn btn-danger mt-2"
+              >
+                Cancelar Orden
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
