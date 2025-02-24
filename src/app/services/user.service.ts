@@ -28,7 +28,7 @@ export class UserService {
       .subscribe((result) => {
         this.isUserLogedIn.next(true);
         if (result) {
-          localStorage.setItem('user', JSON.stringify(result.body));
+          //localStorage.setItem('user', JSON.stringify(result.body));
           this.router.navigate(['/']);
         }
       });

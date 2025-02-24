@@ -31,7 +31,7 @@ export class SellerService implements OnInit {
   userLogin(data: login) {
     this.http
       .get(
-        `http://localhost:3001/seller?email=${data.email}&password=${data.password}`,
+        `http://localhost:3001/seller?email=${data.correo}&password=${data.password}`,
         { observe: 'response' }
       )
       .subscribe((result: any) => {

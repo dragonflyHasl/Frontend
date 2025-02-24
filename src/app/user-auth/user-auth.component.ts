@@ -51,7 +51,7 @@ export class UserAuthComponent implements OnInit {
   */
   login(value: login) {
     this.authService
-      .login({ correo: value.email, password: value.password })
+      .login({ correo: value.correo, password: value.password })
       .subscribe(
         (response) => {
           this.authService.saveToken(response.token);
@@ -72,6 +72,7 @@ export class UserAuthComponent implements OnInit {
     let user = localStorage.getItem('user');
     let userId = user && JSON.parse(user).id;
     if (data) {
+      console.log(data)
       let cartDatalist: product[] = JSON.parse(data);
 
       cartDatalist.forEach((prduct: product, index) => {
@@ -80,7 +81,7 @@ export class UserAuthComponent implements OnInit {
           //productId: prduct.id,
           //usuarioId: 0,
           //cantidad: 1,
-          idusuario: this.usuario.id,
+          idusuario: this.usuario?.id,
           productos: this.producto,
         };
         delete cartData.id;

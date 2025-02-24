@@ -3,13 +3,19 @@ import { Injectable } from '@angular/core';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/enviroment';
+import { Router } from '@angular/router';
+
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
   private apiUrl = 'http://localhost:5030/api/auth/login';
 
-  constructor(private http: HttpClient, private jwtHelper: JwtHelperService) {}
+  constructor(
+    private router: Router,
+    private http: HttpClient,
+    private jwtHelper: JwtHelperService
+  ) {}
 
   login(credentials: {
     correo: string;
@@ -19,7 +25,9 @@ export class AuthService {
   }
 
   logout(): void {
-    localStorage.removeItem('token');
+    localStorage.removeItem('token'); // Elimina el token
+    localStorage.removeItem('user'); // (Opcional) Elimina datos del usuario si los guardaste
+    this.router.navigate(['/']); // Redirige al login
   }
 
   saveToken(token: string): void {

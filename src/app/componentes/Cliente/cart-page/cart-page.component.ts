@@ -16,8 +16,8 @@ export class CartPageComponent implements OnInit {
     private authService: AuthService
   ) {}
   localCartData: any;
-  cartData: cart[] | undefined;
-  cartDetalleData: cartDetalle[] | undefined;
+  cartData: cart[] | any;
+  cartDetalleData: cartDetalle[] | any;
   noProductMsg = '';
   msgUserNotLogin = '';
   priceSummary: priceSummary = {
@@ -32,69 +32,73 @@ export class CartPageComponent implements OnInit {
     this.call();
   }
   call() {
-    if (localStorage.getItem('user')) {
-      this.product.currentCartData().subscribe((result) => {
+    if (this.authService.getUserId()) {
+      console.log(this.authService.getUserId());
+      this.product.currentCartData().subscribe((result: cart[]) => {
         this.cartData = result;
+        console.log('Cart Data:', this.cartData);
+
         let amount = 0;
-        if (this.cartData && this.cartData[0] && this.cartData[0].productos) {
-          this.cartData[0].productos.forEach((item) => {
-            let productPrice = 0;
-            if (item.cantidad) {
-              productPrice += +item.producto.precio * +item.cantidad;
+
+        // Asumimos que el carrito del usuario está en la primera posición (o puedes recorrer todos)
+        if (this.cartData && this.cartData.length > 0) {
+          // Aseguramos que productos sea un array válido
+          const productos = this.cartData[0].productos || [];
+
+          productos.forEach((item: cartDetalle) => {
+            if (item.cantidad && item.producto && item.producto.precio) {
+              amount += item.producto.precio * item.cantidad;
             }
-            amount += productPrice;
           });
         }
 
-        if (amount != 0) {
+        // Actualizamos el resumen de precios si se calculó algún monto
+        if (amount !== 0) {
           this.priceSummary.price = amount;
-          this.priceSummary.discount = (amount / 100) * 8;
+          this.priceSummary.discount = (amount * 8) / 100;
           this.priceSummary.tax = amount / 10;
           this.priceSummary.delivery = 10;
         } else {
           this.noProductMsg = 'No hay ningún producto agregado en el carrito..';
         }
 
-        let totalAmount =
+        // Calculamos el total final
+        this.priceSummary.total =
           this.priceSummary.price -
           this.priceSummary.discount +
           this.priceSummary.tax +
           this.priceSummary.delivery;
-        this.priceSummary.total = totalAmount;
       });
     } else {
-      let data = localStorage.getItem('localCart');
-      let userStore = localStorage.getItem('localCart');
-      let userData = userStore && JSON.parse(userStore);
-      console.log('cartData=', userData);
-      this.cartData = userData;
+      let cartData = localStorage.getItem('localCart');
+      this.cartData = cartData ? JSON.parse(cartData) : [];
+
+      console.log('Cart Data:', this.cartData);
 
       let amount = 0;
-      userData.forEach(
-        (item: { quantity: string | number; price: string | number }) => {
-          let productPrice = 0;
-          if (item.quantity) {
-            productPrice += +item.price * +item.quantity;
+
+      // Verificamos si hay carritos en el almacenamiento
+      if (this.cartData.length > 0) {
+        this.cartData.forEach((cart: cart) => {
+          if (cart.productos && cart.productos.length > 0) {
+            cart.productos.forEach((item: cartDetalle) => {
+              if (item.cantidad && item.producto?.precio) {
+                amount += item.producto.precio * item.cantidad;
+              }
+            });
           }
-          amount += productPrice;
-        }
-      );
+        });
 
-      if (amount != 0) {
-        this.priceSummary.price = amount;
-        this.priceSummary.discount = (amount / 100) * 8;
-        this.priceSummary.tax = amount / 10;
-        this.priceSummary.delivery = 10;
+        this.priceSummary = {
+          price: amount,
+          discount: (amount / 100) * 8,
+          tax: amount / 10,
+          delivery: 10,
+          total: amount - (amount / 100) * 8 + amount / 10 + 10,
+        };
       } else {
-        this.noProductMsg = 'No hay ningún producto agregado en el carrito..';
+        this.noProductMsg = 'No hay ningún producto agregado en el carrito.';
       }
-
-      let totalAmount =
-        this.priceSummary.price -
-        this.priceSummary.discount +
-        this.priceSummary.tax +
-        this.priceSummary.delivery;
-      this.priceSummary.total = totalAmount;
     }
   }
 

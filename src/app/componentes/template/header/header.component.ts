@@ -79,9 +79,11 @@ export class HeaderComponent implements OnInit {
         ) {
           let userStore = localStorage.getItem('user');
           let userData = userStore && JSON.parse(userStore);
-          this.userName = this.authService.getUserName();
-          this.menuType = 'user';
-          this.product.getCartList(userData.id);
+          if (userData && userData.id) {
+            this.userName = this.authService.getUserName();
+            this.menuType = 'user';
+            this.product.getCartList(userData.id);
+          }
         } else {
           this.menuType = 'default';
         }
@@ -94,7 +96,7 @@ export class HeaderComponent implements OnInit {
   }
   userlogout() {
     localStorage.removeItem('user');
-    this.route.navigate(['user-auth']);
+    this.authService.logout();
     this.product.cartData.emit([]);
   }
 
@@ -103,6 +105,7 @@ export class HeaderComponent implements OnInit {
   }
   logout() {
     localStorage.removeItem('seller');
+    this.authService.logout();
     this.route.navigate(['/']);
   }
 

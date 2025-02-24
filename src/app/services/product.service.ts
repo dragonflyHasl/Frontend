@@ -53,19 +53,30 @@ export class ProductService {
     if (localCart) {
       cartData = JSON.parse(localCart);
     }
-
+    console.log(data);
+    console.log(userId);
+    console.log(cartData);
     // Buscar el carrito del usuario
     let userCart = cartData.find((cart) => cart.idusuario === userId);
-
+    console.log(userCart);
     if (userCart) {
+      // Asegurar que `productos` sea un array
+      if (!userCart.productos) {
+        userCart.productos = [];
+      }
+
       // Verificar si el producto ya existe en el carrito
-      let existingProduct = userCart.productos?.find((p) => p.id === data.id);
+      let existingProduct = userCart.productos?.find(
+        (p) => p.producto.id === data.producto.id
+      );
+      console.log(existingProduct);
       if (existingProduct) {
         // Si ya existe, solo aumentar la cantidad
         existingProduct.cantidad += data.cantidad;
       } else {
         // Si no existe, agregarlo al carrito del usuario
         userCart.productos?.push(data);
+        console.log(userCart);
       }
     } else {
       // Si el usuario no tiene carrito, crear uno nuevo
@@ -74,6 +85,7 @@ export class ProductService {
         idusuario: userId, // Ajustar según estructura real
         productos: [data],
       });
+      console.log(cartData);
     }
 
     localStorage.setItem('localCart', JSON.stringify(cartData));
@@ -126,7 +138,12 @@ export class ProductService {
   currentCartData() {
     let userStore = localStorage.getItem('user');
     let userData = userStore && JSON.parse(userStore);
-    return this.http.get<cart[]>(this.apiUrl + '/cart?userId=' + userData.id);
+    if (!userData || !userData.id) {
+      return this.http.get<cart[]>(
+        this.apiUrl + '/cart/33A1FF80-0405-44D4-B6CF-F5722AC849B6'
+      ); // Retorna un carrito vacío o maneja de otra forma
+    }
+    return this.http.get<cart[]>(this.apiUrl + '/cart/' + userData.id);
   }
 
   orderNow(data: order) {

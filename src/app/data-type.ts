@@ -20,7 +20,7 @@ export interface singUp {
 }
 
 export interface login {
-  email: string;
+  correo: string;
   password: string;
 }
 
