@@ -70,5 +70,5 @@ export interface cartDetalle {
 export interface cart {
   id: number | undefined;
   idusuario: any;
-  productos: cartDetalle[] | undefined;
+  productos: cartDetalle[] | any[];
 }

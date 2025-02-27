@@ -34,12 +34,10 @@ export class CartPageComponent implements OnInit {
   call() {
     if (this.authService.getUserId()) {
       console.log(this.authService.getUserId());
-      this.product.currentCartData().subscribe((result: cart[]) => {
-        this.cartData = result;
+      this.product.currentCartData().subscribe((result) => {
+        
         console.log('Cart Data:', this.cartData);
-
         let amount = 0;
-
         // Asumimos que el carrito del usuario está en la primera posición (o puedes recorrer todos)
         if (this.cartData && this.cartData.length > 0) {
           // Aseguramos que productos sea un array válido
@@ -119,7 +117,7 @@ export class CartPageComponent implements OnInit {
     } else {
       // Usuario autenticado -> eliminar desde la API
       this.product.removeToCartApi(productId).subscribe(() => {
-        this.product.getCartList(userId);
+        //this.product.getCartList(userId); descomentar 2025
         this.call();
       });
     }

@@ -27,6 +27,7 @@ export class AuthService {
   logout(): void {
     localStorage.removeItem('token'); // Elimina el token
     localStorage.removeItem('user'); // (Opcional) Elimina datos del usuario si los guardaste
+    localStorage.removeItem('localCart');
     this.router.navigate(['/']); // Redirige al login
   }
 
@@ -57,6 +58,19 @@ export class AuthService {
       return (
         decodedToken[
           'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'
+        ] || null
+      );
+    }
+    return null;
+  }
+
+  getUserRol(): string | null {
+    const token = this.getToken();
+    if (token) {
+      const decodedToken = this.jwtHelper.decodeToken(token);
+      return (
+        decodedToken[
+          'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/role'
         ] || null
       );
     }

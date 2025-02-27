@@ -79,8 +79,11 @@ export class HeaderComponent implements OnInit {
         ) {
           let userStore = localStorage.getItem('user');
           let userData = userStore && JSON.parse(userStore);
+          console.log(userData);
+          console.log(userStore);
           if (userData && userData.id) {
             this.userName = this.authService.getUserName();
+            console.log(this.userName);
             this.menuType = 'user';
             this.product.getCartList(userData.id);
           }

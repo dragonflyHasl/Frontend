@@ -1,7 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { UserService } from '../services/user.service';
 import { AuthService } from '../auth.service';
-import { cart, login, product, singUp, usuario } from '../data-type';
+import {
+  cart,
+  login,
+  product,
+  singUp,
+  usuario,
+  cartDetalle,
+} from '../data-type';
 import { ProductService } from '../services/product.service';
 import { Router } from '@angular/router';
 
@@ -56,9 +63,15 @@ export class UserAuthComponent implements OnInit {
         (response) => {
           this.authService.saveToken(response.token);
           const userId = this.authService.getUserId();
+          const UserRol = this.authService.getUserRol();
+          const userData = {
+            id: userId,
+            rol: UserRol,
+          };
+          localStorage.setItem('user', JSON.stringify(userData));
           console.log('ID del usuario:', userId);
-          this.router.navigate(['/cart-page']); // Redirige a otra página después del login
           this.localCartToRemotecart();
+          this.router.navigate(['/cart-page']); // Redirige a otra página después del login
         },
         (error) => {
           console.error('Error al iniciar sesión', error);
@@ -68,35 +81,48 @@ export class UserAuthComponent implements OnInit {
   }
 
   localCartToRemotecart() {
+    // Obtener el carrito local y el usuario del localStorage
     let data = localStorage.getItem('localCart');
     let user = localStorage.getItem('user');
-    let userId = user && JSON.parse(user).id;
-    if (data) {
-      console.log(data)
-      let cartDatalist: product[] = JSON.parse(data);
 
-      cartDatalist.forEach((prduct: product, index) => {
-        let cartData: cart = {
-          ...prduct,
-          //productId: prduct.id,
-          //usuarioId: 0,
-          //cantidad: 1,
-          idusuario: this.usuario?.id,
-          productos: this.producto,
+    // Verificar si el usuario existe y obtener su ID
+    let userId = user && JSON.parse(user).id;
+    console.log(userId);
+    console.log(data);
+    // Verificar si hay datos en el carrito y si el usuario está autenticado
+    if (data && userId) {
+      // Parsear los datos del carrito
+      let cartDatalist: cart[] = JSON.parse(data);
+      console.log(cartDatalist[0]);
+      console.log(cartDatalist[0].productos.length);
+
+      // Iterar sobre cada producto en el carrito
+      cartDatalist[0].productos.forEach((producto: any, index: number) => {
+        // Crear el objeto de datos del carrito para enviar al servidor
+        let cartData = {
+          usuarioId: userId,
+          productoId: producto.producto.id,
+          cantidad: producto.cantidad,
         };
-        delete cartData.id;
+        console.log(cartData);
+        // Enviar los datos del carrito al servidor con un retraso de 500ms
         setTimeout(() => {
+          console.log(cartData);
           this.product.userAddToCart(cartData).subscribe((result) => {
             if (result) {
-              console.log('Item store in DB');
+              console.log('Item stored in DB');
             }
           });
-          if (cartDatalist.length === index + 1) {
+
+          // Si es el último producto, eliminar el carrito local
+          if (cartDatalist[0].productos.length === index + 1) {
             localStorage.removeItem('localCart');
           }
         }, 500);
       });
     }
+
+    // Actualizar la lista del carrito después de 2 segundos
     setTimeout(() => {
       this.product.getCartList(userId);
     }, 2000);

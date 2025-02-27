@@ -116,34 +116,34 @@ export class ProductService {
     }
   }
 
-  userAddToCart(cartData: cart) {
-    return this.http.post(this.apiUrl + '/cart', cartData);
+  userAddToCart(cartData: any) {
+    console.log(cartData);
+    return this.http.post(this.apiUrl + '/carrito', cartData);
   }
 
   getCartList(userId: any) {
     return this.http
-      .get<cart[]>(this.apiUrl + '/cart?userId=' + userId, {
+      .get<cart[]>(this.apiUrl + '/carrito/' + userId, {
         observe: 'response',
       })
       .subscribe((result) => {
         if (result && result.body) {
           this.cartData.emit(result.body);
+          console.log(this.cartData);
         }
       });
   }
   removeToCartApi(cartId: number) {
-    return this.http.delete(this.apiUrl + '/cart/' + cartId);
+    return this.http.delete(this.apiUrl + '/carrito' + cartId);
   }
 
   currentCartData() {
     let userStore = localStorage.getItem('user');
     let userData = userStore && JSON.parse(userStore);
     if (!userData || !userData.id) {
-      return this.http.get<cart[]>(
-        this.apiUrl + '/cart/33A1FF80-0405-44D4-B6CF-F5722AC849B6'
-      ); // Retorna un carrito vacío o maneja de otra forma
+      return this.http.get<cart[]>(this.apiUrl + '/carrito/' + userData.id); // Retorna un carrito vacío o maneja de otra forma
     }
-    return this.http.get<cart[]>(this.apiUrl + '/cart/' + userData.id);
+    return this.http.get<cart[]>(this.apiUrl + '/carrito/' + userData.id);
   }
 
   orderNow(data: order) {
